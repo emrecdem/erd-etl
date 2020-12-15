@@ -4,6 +4,8 @@ import magic
 import textgrid
 
 import lib.topics as tp
+from erd_database import ERD_Database
+
 
 def merge_features():
 
@@ -12,19 +14,31 @@ def merge_features():
     # Load openface features
     time_series = pd.read_csv(openface_file, skipinitialspace=True)
 
-    # Add columns for topics, silences
-    load_topics(topics_file, time_series)
+    # Load & merge topics
+    topics_list = tp.get_topics_from_txt(topics_file)
+    topics_df = pd.DataFrame(topics_list, columns=['start_time', 'end_time', 'index', 'description'])
+    merge_topics(topics_list, time_series)
+
+    # Load and merge silences
     load_silences(silences_file, time_series)
+
+    # Prepare to load to database
+    erd_database = ERD_Database()
+
+    # Create new video entry, reference from other tables and load to database
+    video_id = erd_database.insert_video(openface_file)
+
+    topics_df['video'] = video_id
+    topics_df.to_sql('topics', erd_database.engine, index=False, if_exists='append')
+
+    time_series['video'] = video_id
+    time_series.to_sql('data', erd_database.engine, index=False, if_exists='append')
 
     time_series.to_csv(output_file, index=False)
 
 
-def load_topics(topics_file, time_series):
-
-    # Load file
-    topic_list = tp.get_topics_from_txt(topics_file)
-
-    # Add column
+def merge_topics(topic_list, time_series):
+    # Add column to time series for topic
     time_series['topic'] = -1
     for (start_time, end_time, topic_index, topic_label) in topic_list:
         topic_range_filter = (time_series['timestamp'] >= start_time) & (time_series['timestamp'] < end_time)
