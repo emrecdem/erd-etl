@@ -9,10 +9,14 @@ from erd_database import ERD_Database
 
 def merge_features():
 
-    openface_file, topics_file, silences_file, output_file = parse_arguments()
+    openface_file, topics_file, silences_file, praat_file, output_file = parse_arguments()
     
     # Load openface features
     time_series = pd.read_csv(openface_file, skipinitialspace=True)
+
+    # Load & merge audio features
+    audio_df = pd.read_csv(praat_file, delimiter=';')
+    merge_audio(audio_df, time_series)
 
     # Load & merge topics
     topics_list = tp.get_topics_from_txt(topics_file)
@@ -35,6 +39,18 @@ def merge_features():
     time_series.to_sql('data', erd_database.engine, index=False, if_exists='append')
 
     time_series.to_csv(output_file, index=False)
+
+
+def merge_audio(audio_df, time_series):
+
+    def getValueFromAudio(timestamp, column):
+        matches = audio_df.loc[audio_df['time'] == timestamp, column]
+        if (matches.size == 0):
+            return -1
+        else:
+            return matches.iat[0]
+    time_series['pitch'] = time_series.apply(lambda row: getValueFromAudio(row.timestamp, 'pitch'), axis=1)
+    time_series['intensity'] = time_series.apply(lambda row: getValueFromAudio(row.timestamp, 'intensity'), axis=1)
 
 
 def merge_topics(topic_list, time_series):
@@ -82,7 +98,8 @@ def parse_arguments():
 
     parser.add_argument('-tp', type=str)
     parser.add_argument('-sl', type=str)
-    
+    parser.add_argument('-pr', type=str)
+
     parser.add_argument( 
             '-o',
             # nargs='?', # expects one argument after -o
@@ -93,7 +110,7 @@ def parse_arguments():
             )
     
     args = parser.parse_args()
-    return args.of, args.tp, args.sl, args.o
+    return args.of, args.tp, args.sl, args.pr, args.o
 
 if __name__ == "__main__":
     merge_features()
