@@ -1,10 +1,11 @@
 from sqlalchemy import Table, Column, Integer, Float, String, MetaData, create_engine
 import re
+import os
 
 class ERD_Database:
 
     def __init__(self):
-        self.engine = create_engine('postgresql://postgres:postgrespassword@127.0.0.1:5445/postgres')
+        self.engine = create_engine(os.environ['DB_CONNECTION'])
         self.create_tables()
 
     def create_tables(self):
