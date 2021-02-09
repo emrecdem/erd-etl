@@ -3,8 +3,9 @@
 
 cwlVersion: v1.2
 class: CommandLineTool
-baseCommand: [/home/openface-build/build/bin/FeatureExtraction, -of, video.csv]
-hints:
+baseCommand: [/home/openface-build/build/bin/FeatureExtraction]
+
+requirements:
   DockerRequirement:
     dockerImageId: openface
     dockerFile: >
@@ -26,4 +27,4 @@ outputs:
   csv_out:
     type: File
     outputBinding:
-      glob: ./processed/video.csv
+      glob: ./processed/$(inputs.video.nameroot).csv
