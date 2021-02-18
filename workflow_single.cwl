@@ -46,4 +46,5 @@ steps:
       topics: topics
       silences: silences
       praat_features: praat/csv_out
+      video_file: video
     out: [csv_out]
