@@ -34,6 +34,11 @@ inputs:
     inputBinding:
       position: 4
       prefix: -pr
+  video_file:
+    type: File
+    inputBinding:
+      position: 5
+      prefix: -vi
 outputs:
   csv_out:
     type: File

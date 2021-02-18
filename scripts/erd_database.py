@@ -1,5 +1,6 @@
 import os
 import re
+import hashlib
 
 from sqlalchemy import (Column, Float, Integer, MetaData, String, Table,
                         create_engine)
@@ -15,6 +16,7 @@ class ERD_Database:
 
         self.videos = Table('videos', metadata,
                             Column('id', Integer, primary_key=True),
+                            Column('hash', String, unique=True),
                             Column('study', String),
                             Column('participant', Integer),
                             Column('session', Integer),
@@ -31,17 +33,23 @@ class ERD_Database:
 
         metadata.create_all(self.engine)
 
-    def insert_video(self, filename):
+    def insert_video(self, filename, video_file):
         # Get meta data from filename
         r = r"P([0-9]+)_S([0-9]+)_([a-zA-Z]+)_([a-zA-Z]+)([0-9]+)([^\/]+)$"
         matches = re.findall(r, filename)
         participant, session, experiment, memory_type, memory_index, _ = matches[
             0]
 
+        # Calculate hash
+        chunkSize = 1 * 1024 * 1024  # 1 MB
+        m = hashlib.sha256()
+        m.update(video_file.read(chunkSize))
+        sha256 = m.hexdigest()
+
         # Insert video
         ins = self.videos.insert().values(study="ERD", participant=participant, \
             session=session, experiment=experiment, memory_type=memory_type, \
-            memory_index=memory_index)
+            memory_index=memory_index, hash=sha256)
         conn = self.engine.connect()
         result = conn.execute(ins)
         return result.inserted_primary_key[0]
