@@ -37,8 +37,7 @@ class ERD_Database:
         # Get meta data from filename
         r = r"P([0-9]+)_S([0-9]+)_([a-zA-Z]+)_([a-zA-Z]+)([0-9]+)([^\/]+)$"
         matches = re.findall(r, filename)
-        participant, session, experiment, memory_type, memory_index, _ = matches[
-            0]
+        participant, session, experiment, memory_type, memory_index, _ = matches[0]
 
         # Calculate hash
         chunkSize = 1 * 1024 * 1024  # 1 MB
