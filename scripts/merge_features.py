@@ -74,7 +74,10 @@ def load_silences(silences_file, time_series):
     # Add column
     def isSilent(timestamp):
         filt = (silences['start'] <= timestamp) & (timestamp < silences['stop'])
-        return silences.loc[filt, 'name'].iat[0] == 'silent'
+        silence = silences.loc[filt, 'name']
+        if len(silence) > 0:
+            return silence.iat[0] == 'silent'
+        return True
     time_series['silence'] = time_series.apply(lambda row: isSilent(row.timestamp), axis=1)
     #TODO maybe filtering the dataframe on each start-stop and applying silent/sounding in one go might be faster?
 
