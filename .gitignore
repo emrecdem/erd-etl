@@ -2,3 +2,6 @@
 data/
 *.csv
 *.tar
+upload/
+running-jobs/
+output/
