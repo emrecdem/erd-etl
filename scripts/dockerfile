@@ -1,5 +1,8 @@
 FROM python:3
 
+# mysqlclient is required by pattern library...
+RUN apt-get install default-libmysqlclient-dev
+
 WORKDIR /app
 
 COPY . .

@@ -9,9 +9,9 @@ from erd_database import ERD_Database
 
 def merge_features():
 
-    openface_file, topics_file, silences_file, praat_file, \
+    openface_file, topics_file, silences_file, praat_file, sentiment_file, \
         video_file, output_file = parse_arguments()
-    
+
     # Load openface features
     time_series = pd.read_csv(openface_file, skipinitialspace=True)
 
@@ -26,6 +26,10 @@ def merge_features():
 
     # Load and merge silences
     load_silences(silences_file, time_series)
+
+    # Load and merge sentiment
+    sentiment_df = pd.read_csv(sentiment_file)
+    merge_sentiment(sentiment_df, time_series)
 
     # Prepare to load to database
     erd_database = ERD_Database()
@@ -62,6 +66,15 @@ def merge_topics(topic_list, time_series):
         time_series.loc[topic_range_filter, 'topic'] = topic_index
 
 
+def merge_sentiment(sentiment_df, time_series):
+    time_series['sentiment_polarity'] = None
+    time_series['sentiment_subjectivity'] = None
+    for index, row in sentiment_df.iterrows():
+        range_filter = (time_series['timestamp'] >= row['start']) & (time_series['timestamp'] < row['stop'])
+        time_series.loc[range_filter, 'sentiment_polarity'] = row['sentiment_polarity']
+        time_series.loc[range_filter, 'sentiment_subjectivity'] = row['sentiment_subjectivity']
+
+
 def load_silences(silences_file, time_series):
 
     # Load file
@@ -83,40 +96,18 @@ def load_silences(silences_file, time_series):
 
 
 def parse_arguments():
-
     parser = argparse.ArgumentParser( # See https://docs.python.org/3.7/library/argparse.html
                 description='Merge raw video features',
-                usage='python merge_features.py '+\
-                    '[-i <input.csv>] '+\
-                    '[-o <output.csv>] ')
-
-    parser.add_argument( 
-            '-of',
-            #nargs=1, # expects one argument after -i
-            required=True,
-            #const=DEFAULT_IN, # default if -i is provided but no file specified
-            #default=DEFAULT_IN, # default if -i is not provided
-            help='Input csv',
-            type=str #FileType('r', encoding="utf-8") # expect a filename
-            )
-
-    parser.add_argument('-tp', type=str)
-    parser.add_argument('-sl', type=str)
-    parser.add_argument('-pr', type=str)
-
-    parser.add_argument('-vi', type=argparse.FileType('rb'))
-
-    parser.add_argument( 
-            '-o',
-            # nargs='?', # expects one argument after -o
-            # const=DEFAULT_OUT, # default if -o is provided but no file specified
-            # default=DEFAULT_OUT, # default if -o is not provided
-            help='Merged output as csv file',
-            type=str #argparse.FileType('w', encoding="utf-8") # expect a filename
-            )
-    
+                usage='python merge_features.py')
+    parser.add_argument('-of', type=str, help='Openface output')
+    parser.add_argument('-tp', type=str, help='Topics file')
+    parser.add_argument('-sl', type=str, help='Silences TextGrid')
+    parser.add_argument('-pr', type=str, help='Transcript TextGrid') # praat file
+    parser.add_argument('-sm', type=str, help='Sentiment csv')
+    parser.add_argument('-vi', type=argparse.FileType('rb'), help='Video file')
+    parser.add_argument('-o', type=str, help='Merged output as csv file')
     args = parser.parse_args()
-    return args.of, args.tp, args.sl, args.pr, args.vi, args.o
+    return args.of, args.tp, args.sl, args.pr, args.sm, args.vi, args.o
 
 if __name__ == "__main__":
     merge_features()

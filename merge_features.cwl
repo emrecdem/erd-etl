@@ -9,7 +9,7 @@ requirements:
     networkAccess: true
   EnvVarRequirement:
     envDef:
-      DB_CONNECTION: postgresql://postgres:postgrespassword@host.docker.internal:5446/postgres
+      DB_CONNECTION: postgresql://postgres:postgrespassword@host.docker.internal:5432/postgres
   DockerRequirement:
     dockerImageId: erd-etl
     dockerLoad: scripts/erd-etl.tar
@@ -34,10 +34,15 @@ inputs:
     inputBinding:
       position: 4
       prefix: -pr
-  video_file:
+  sentiment_features:
     type: File
     inputBinding:
       position: 5
+      prefix: -sm
+  video_file:
+    type: File
+    inputBinding:
+      position: 6
       prefix: -vi
 outputs:
   csv_out:

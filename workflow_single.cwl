@@ -39,6 +39,12 @@ steps:
       video: video
     out: [csv_out]
 
+  sentiment:
+    run: sentiment.cwl
+    in:
+      transcript: transcription
+    out: [csv_out]
+
   merge_features:
     run: merge_features.cwl
     in:
@@ -46,5 +52,6 @@ steps:
       topics: topics
       silences: silences
       praat_features: praat/csv_out
+      sentiment_features: sentiment/csv_out
       video_file: video
     out: [csv_out]

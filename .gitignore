@@ -5,3 +5,4 @@ data/
 upload/
 running-jobs/
 output/
+tmp/

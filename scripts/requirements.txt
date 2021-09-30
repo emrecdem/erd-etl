@@ -3,3 +3,4 @@ sqlalchemy
 psycopg2-binary
 python-magic
 git+git://github.com/emrecdem/textgrid.git@erd-modifications#egg=textgrid
+pattern
