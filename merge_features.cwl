@@ -9,7 +9,7 @@ requirements:
     networkAccess: true
   EnvVarRequirement:
     envDef:
-      DB_CONNECTION: postgresql://postgres:postgrespassword@host.docker.internal:5432/postgres
+      DB_CONNECTION: postgresql://postgres:postgrespassword@172.26.0.10:5432/postgres
   DockerRequirement:
     dockerImageId: erd-etl
     dockerLoad: scripts/erd-etl.tar
