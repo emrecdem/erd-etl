@@ -3,7 +3,7 @@
 cwlVersion: v1.2
 class: CommandLineTool
 baseCommand: [python3, /app/merge_features.py]
-arguments: [-o, $(inputs.openface_features.nameroot).csv]
+arguments: [-o, output.csv]
 requirements:
   NetworkAccess:
     networkAccess: true
@@ -53,4 +53,4 @@ outputs:
   csv_out:
     type: File
     outputBinding:
-      glob: ./$(inputs.openface_features.nameroot).csv
+      glob: ./output.csv
