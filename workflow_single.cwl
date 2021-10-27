@@ -20,6 +20,10 @@ inputs:
     type:
         type: enum
         symbols: ["vrouw", "man"]
+  language:
+    type:
+      type: enum
+      symbols: ["en", "nl"]
 outputs:
   csv_out:
     type: File
@@ -45,6 +49,7 @@ steps:
     run: sentiment.cwl
     in:
       transcript: transcription
+      language: language
     out: [csv_out]
 
   merge_features:
