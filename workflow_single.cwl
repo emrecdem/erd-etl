@@ -4,6 +4,8 @@ cwlVersion: v1.2
 class: Workflow
 
 inputs:
+  xenonflow_jobid:
+    type: string
   video:
     type: File
   audio:
@@ -54,4 +56,5 @@ steps:
       praat_features: praat/csv_out
       sentiment_features: sentiment/csv_out
       video_file: video
+      jobid: xenonflow_jobid
     out: [csv_out]

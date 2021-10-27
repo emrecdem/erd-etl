@@ -44,6 +44,11 @@ inputs:
     inputBinding:
       position: 6
       prefix: -vi
+  jobid:
+    type: string
+    inputBinding:
+      position: 7
+      prefix: -jid
 outputs:
   csv_out:
     type: File

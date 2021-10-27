@@ -10,7 +10,7 @@ from erd_database import ERD_Database
 def merge_features():
 
     openface_file, topics_file, silences_file, praat_file, sentiment_file, \
-        video_file, output_file = parse_arguments()
+        video_file, job_id, output_file = parse_arguments()
 
     # Load openface features
     time_series = pd.read_csv(openface_file, skipinitialspace=True)
@@ -35,7 +35,7 @@ def merge_features():
     erd_database = ERD_Database()
 
     # Create new video entry, reference from other tables and load to database
-    video_id = erd_database.insert_video(openface_file, video_file)
+    video_id = erd_database.insert_video(openface_file, video_file, job_id)
 
     topics_df['video'] = video_id
     topics_df.to_sql('topics', erd_database.engine, index=False, if_exists='append')
@@ -105,9 +105,10 @@ def parse_arguments():
     parser.add_argument('-pr', type=str, help='Transcript TextGrid') # praat file
     parser.add_argument('-sm', type=str, help='Sentiment csv')
     parser.add_argument('-vi', type=argparse.FileType('rb'), help='Video file')
+    parser.add_argument('-jid', type=str, help='Job id')
     parser.add_argument('-o', type=str, help='Merged output as csv file')
     args = parser.parse_args()
-    return args.of, args.tp, args.sl, args.pr, args.sm, args.vi, args.o
+    return args.of, args.tp, args.sl, args.pr, args.sm, args.vi, args.jid, args.o
 
 if __name__ == "__main__":
     merge_features()
