@@ -5,4 +5,5 @@ data/
 upload/
 running-jobs/
 output/
-tmp/
+tmp/*
+!tmp/.dont_delete

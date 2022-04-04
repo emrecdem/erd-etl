@@ -49,9 +49,9 @@ def merge_features():
 def merge_audio(audio_df, time_series):
 
     def getValueFromAudio(timestamp, column):
-        matches = audio_df.loc[audio_df['time'] == timestamp, column]
+        matches = audio_df.loc[audio_df['time'] >= timestamp, column]
         if (matches.size == 0):
-            return -1
+            return None
         else:
             return matches.iat[0]
     time_series['pitch'] = time_series.apply(lambda row: getValueFromAudio(row.timestamp, 'pitch'), axis=1)
